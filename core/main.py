@@ -1,27 +1,28 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from loguru import logger
 from pydantic import BaseModel
 
-app = FastAPI(title="L.O.N.G.I.N Core System")
+# Add to existing imports
+class LogEntry(BaseModel):
+    message: str
+    stack: str | None = None
+    context: str | None = None
+    timestamp: str
+    type: str
 
-class ModuleRegistration(BaseModel):
-    module_id: str
-    module_type: str
-    level: int
-    dependencies: list[str]
+@app.post("/log")
+async def log_error(entry: LogEntry):
+    logger.error(f"{entry.type} - {entry.message}\nContext: {entry.context}\nStack: {entry.stack}")
+    return {"status": "logged"}
 
-class EventMessage(BaseModel):
-    source: str
-    target: str
-    event_type: str
-    payload: dict
+@app.get("/api/test-success")
+async def test_success():
+    return {"message": "Success test passed"}
 
-@app.post("/register_module")
-async def register_module(module: ModuleRegistration):
-    logger.info(f"Registering module: {module.module_id}")
-    return {"status": "success", "message": f"Module {module.module_id} registered"}
-
-@app.post("/event")
-async def handle_event(event: EventMessage):
-    logger.info(f"Event received from {event.source} to {event.target}")
-    return {"status": "success", "event_id": "generated_id"}
+@app.get("/api/test-error")
+async def test_error():
+    try:
+        1 / 0
+    except Exception as e:
+        logger.error("Test error triggered: {}", e)
+        raise HTTPException(status_code=500, detail="Intentional test error")
