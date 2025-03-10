@@ -8,4 +8,4 @@ services:
     volumes:
       - .:/app
     environment:
-      - PYTHONPATH=/C:\Users\jamic\AppData\Roaming\Python\Python311\Scripts
+      - PYTHONPATH=/app

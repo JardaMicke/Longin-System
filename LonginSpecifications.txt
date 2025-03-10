@@ -1,0 +1,100 @@
+🔹 Detailní vývojový postup projektu L.O.N.G.I.N.
+1️⃣ Příprava pracovního prostoru a prostředí
+✅ Cíl: Vytvořit správně nastavené vývojové prostředí, aby byl vývoj efektivní a přehledný.
+
+1.1. Vytvoření struktury projektu
+📂 Vytvořit hlavní složku projektu L.O.N.G.I.N./
+📂 Podsložky podle modulární architektury:
+core/ – hlavní orchestrátor a správa modulů
+modules/ – jednotlivé moduly 1. až x úrovně podle toho modul nesmí obsahovat jako podmodul modul stejné nebo vyžší urovně
+connectors/ – správa komunikace mezi moduly connector bude mezi každými dvěma moduly
+tests/ – jednotkové a integrační testy
+docs/ – dokumentace, specifikace
+scripts/ – instalační a údržbové skripty
+1.2. Inicializace vývojového prostředí
+🔧 Zvolit programovací jazyk a frameworky (pravděpodobně Python nebo TypeScript + Node.js pro event-driven model)
+🛠️ Nastavit virtuální prostředí (např. venv pro Python, nvm pro Node.js)
+📦 Definovat základní závislosti (requirements.txt nebo package.json)
+2️⃣ Detailní specifikace systému
+✅ Cíl: Definovat přesné požadavky a architekturu systému, aby vývoj probíhal hladce.
+
+2.1. Detailní analýza požadavků
+Sepsat hlavní uživatelské scénáře (use cases)
+Určit bezpečnostní požadavky (např. ochrana proti útokům na API)
+Zmapovat vstupy a výstupy modulů
+2.2. Návrh architektury
+🔄 Definovat toky dat mezi moduly
+🏗️ Určit, jak budou moduly spolupracovat (EventBus, REST API, MQ)
+📊 Vytvořit diagram architektury
+2.3. Technologický stack
+Jazyk(y) a frameworky
+Databáze (SQL vs NoSQL)
+Middleware a messaging systémy (RabbitMQ, Kafka...)
+Monitorovací nástroje (Prometheus, ELK Stack)
+3️⃣ Vývoj základních systémů
+✅ Cíl: Vytvořit základní systém, který umožní rozšiřování jednotlivých modulů.
+
+3.1. Implementace jádra systému (CoreSystem)
+⚙️ Definice event-driven architektury
+📡 Implementace EventBus jako hlavního komunikačního kanálu
+🔌 Vytvoření systému konektorů pro napojení modulů
+3.2. Správa modulů
+Implementace základní registrace modulů
+Definice rozhraní pro dynamické načítání modulů
+Ověření správné komunikace mezi moduly
+3.3. Základní logování a diagnostika
+Implementace logování událostí
+Sledování běžících procesů a výkonu
+Vytvoření diagnostického API
+4️⃣ Implementace jednotlivých modulů
+✅ Cíl: Postupně vyvíjet moduly od nejnižší po nejvyšší úroveň.
+
+4.1. Moduly 1. stupně
+🏗️ Vyvinout jednotlivé základní moduly (např. DOMScraper, FileHandler...)
+✅ Testování každého modulu izolovaně
+📦 Integrace do CoreSystem a ověření komunikace
+4.2. Moduly 2. stupně
+📡 Spojení modulů 1. stupně do komplexnějších celků
+🔄 Validace komunikace mezi moduly
+🛠️ Zajištění správného zpracování dat
+4.3. Moduly 3. stupně a vyšší
+🚀 Vytvoření orchestrace více AI agentů
+🔄 Optimalizace workflow řízení modulů
+🧠 Vytvoření AIHypervisoru pro správu agentů
+5️⃣ Testování
+✅ Cíl: Ověřit, že systém funguje správně a je připraven na nasazení.
+
+5.1. Jednotkové testy
+Otestovat každý modul samostatně
+Simulovat chyby a edge cases
+5.2. Integrační testy
+Ověřit správnou komunikaci mezi moduly
+Testovat zpracování velkých objemů dat
+5.3. Zátěžové testy
+Simulovat reálné zatížení systému
+Měřit výkon a optimalizovat
+5.4. Bezpečnostní testy
+Otestovat ochranu proti zneužití API
+Simulovat útoky na systém
+6️⃣ Nasazení a provoz
+✅ Cíl: Uvést systém do provozu a zajistit jeho spolehlivý běh.
+
+6.1. Příprava produkčního prostředí
+📦 Dockerizace aplikace
+🌍 Nastavení serverů a databází
+🔄 Zajištění vysoké dostupnosti (HA)
+6.2. Automatizované nasazení
+CI/CD pipeline pro automatické buildování a nasazení
+🔄 Automatizované rollbacky při selhání
+6.3. Monitorování a údržba
+📊 Nastavení logování a monitoringu
+🚀 Průběžná optimalizace výkonu
+🛠️ Shrnutí vývoje
+1️⃣ Příprava prostředí – Struktura projektu, nástroje, verzování
+2️⃣ Detailní specifikace – Požadavky, architektura, technologie
+3️⃣ Vývoj základních systémů – CoreSystem, EventBus, moduly
+4️⃣ Implementace modulů – Od 1. úrovně po 5. úroveň
+5️⃣ Testování – Jednotkové, integrační, zátěžové, bezpečnostní testy
+6️⃣ Nasazení – Docker, CI/CD, monitorování
+
+Tímto rozdělením zajistíme logický, systematický a efektivní vývoj, kde se každý krok soustředí na konkrétní část a postupně skládáme celý ekosystém L.O.N.G.I.N.
