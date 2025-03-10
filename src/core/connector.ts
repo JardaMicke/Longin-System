@@ -34,6 +34,7 @@ export class Connector {
       logger.info({ source: this.sourceModule, target: this.targetModule }, 'Data transferred');
       return true;
     }
+    logger.warn({ source: this.sourceModule, target: this.targetModule, data }, 'Data transfer failed');
     return false;
   }
 }
