@@ -1,99 +1,172 @@
-import { useState } from 'react';
-import { 
-  Button, 
-  Container, 
-  Typography, 
-  Paper, 
-  List, 
-  ListItem, 
-  ListItemText 
-} from '@mui/material';
-import { ErrorService } from '../services/errorService';
+import { useState, useEffect } from 'react';
+    import { 
+      Button, 
+      Container, 
+      Typography, 
+      Paper, 
+      List, 
+      ListItem, 
+      ListItemText,
+      Grid,
+      TextField,
+      Box,
+      LinearProgress,
+      Alert,
+      Dialog,
+      DialogTitle,
+      DialogContent,
+      DialogActions,
+      InputLabel,
+      MenuItem,
+      Select,
+      FormControl
+    } from '@mui/material';
+    import { HTMLScanner } from '../modules/level1/scanner/HTMLScanner';
+    import { DOMScraper } from '../modules/level1/scanner/DOMScraper';
+    import { WebPageScanner } from '../modules/level1/scanner/WebPageScanner';
+    import { UserActionRecorder } from '../modules/level1/scanner/UserActionRecorder';
 
-export const TestPage = () => {
-  const [logs, setLogs] = useState<string[]>([]);
+    export const TestPage = () => {
+      const [url, setUrl] = useState('');
+      const [isScanning, setIsScanning] = useState(false);
+      const [actions, setActions] = useState<UserAction[]>([]);
+      const [scanProgress, setScanProgress] = useState(0);
+      const [error, setError] = useState<string | null>(null);
+      const [sessionName, setSessionName] = useState('');
+      const [isSaving, setIsSaving] = useState(false);
 
-  const addLog = (message: string) => {
-    setLogs(prev => [message, ...prev].slice(0, 10));
-  };
+      const scanner = new WebPageScanner(new EventBus());
+      const actionRecorder = new UserActionRecorder();
 
-  const triggerSuccess = async () => {
-    try {
-      addLog('Success action triggered');
-      await fetch('/api/test-success');
-    } catch (e) {
-      ErrorService.logFrontendError(e as Error, 'test-success');
-    }
-  };
+      const startScan = async () => {
+        try {
+          if (!url.startsWith('http://') && !url.startsWith('https://')) {
+            setError('Please enter a valid URL');
+            return;
+          }
 
-  const triggerError = async () => {
-    try {
-      addLog('Error action triggered');
-      await fetch('/api/test-error');
-    } catch (e) {
-      ErrorService.logFrontendError(e as Error, 'test-error');
-    }
-  };
-
-  const triggerClientError = () => {
-    try {
-      // @ts-ignore
-      undefinedFunction();
-    } catch (e) {
-      ErrorService.logFrontendError(e as Error, 'client-error');
-      addLog('Client error triggered');
-    }
-  };
-
-  return (
-    <Container maxWidth="md" sx={{ mt: 4 }}>
-      <Paper elevation={3} sx={{ p: 3 }}>
-        <Typography variant="h4" gutterBottom>
-          System Test Panel
-        </Typography>
-
-        <div style={{ gap: 16, display: 'flex', marginBottom: 24 }}>
-          <Button 
-            variant="contained" 
-            color="success"
-            onClick={triggerSuccess}
-          >
-            Test Success Flow
-          </Button>
+          if (isScanning) return;
           
-          <Button 
-            variant="contained" 
-            color="error"
-            onClick={triggerError}
-          >
-            Test Error Flow
-          </Button>
-          
-          <Button 
-            variant="outlined"
-            onClick={triggerClientError}
-          >
-            Trigger Client Error
-          </Button>
-        </div>
+          setIsScanning(true);
+          setError(null);
+          setActions([]);
+          actionRecorder.startRecording();
+          scanner.start(url);
+        } catch (error) {
+          setError(error instanceof Error ? error.message : 'Scan failed');
+        }
+      };
 
-        <Typography variant="h6" gutterBottom>
-          Recent Logs:
-        </Typography>
+      const stopScan = async () => {
+        setIsScanning(false);
+        actionRecorder.stopRecording();
+      };
+
+      const saveSession = async () => {
+        const session = {
+          url,
+          actions,
+          timestamp: new Date().toISOString(),
+          name: sessionName || `Session_${new Date().toISOString().replace(/[:.]/g, '-')}`
+        };
         
-        <Paper variant="outlined" sx={{ maxHeight: 300, overflow: 'auto' }}>
-          <List dense>
-            {logs.map((log, i) => (
-              <ListItem key={i}>
-                <ListItemText 
-                  primary={log} 
-                  primaryTypographyProps={{ variant: 'body2' }}
+        // Save session logic here
+        setIsSaving(true);
+        alert('Session saved successfully!');
+        setIsSaving(false);
+      };
+
+      return (
+        <Container maxWidth="md" sx={{ mt: 4 }}>
+          <div style={{
+            textAlign: 'center',
+            marginBottom: '20px'
+          }}>
+            <Typography variant="h3" gutterBottom>
+              L.O.N.G.I.N.
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Logical Orchestration Networked Generative Intelligent Nexus
+            </Typography>
+          </div>
+
+          <div style={{
+            marginBottom: '20px'
+          }}>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={8}>
+                <TextField
+                  fullWidth
+                  label="URL to scan"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  sx={{ mr: 2 }}
                 />
-              </ListItem>
-            ))}
-          </List>
-        </Paper>
-      </Paper>
-    </Container>
-  );
-};
+              </Grid>
+              <Grid item xs={4}>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  color={isScanning ? 'warning' : 'primary'}
+                  onClick={isScanning ? stopScan : startScan}
+                  disabled={!url || isSaving}
+                >
+                  {isScanning ? 'Stop Scanning' : 'Start Scanning'}
+                </Button>
+              </Grid>
+            </Grid>
+          </div>
+
+          <div style={{
+            marginBottom: '20px'
+          }}>
+            <Typography variant="h6" gutterBottom>
+              Recorded Actions:
+            </Typography>
+            <List dense>
+              {actions.map((action, i) => (
+                <ListItem
+                  key={i}
+                  sx={{
+                    p: 1,
+                    border: '1px solid #eee',
+                    borderRadius: 1,
+                    mb: 1
+                  }}
+                >
+                  <ListItemText 
+                    primary={`Action ${i + 1}: ${action.type} - ${action.target}`}
+                  />
+                </ListItem>
+              ))}
+            </List>
+          </div>
+
+          <div style={{
+            marginBottom: '20px'
+          }}>
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  label="Session name"
+                  value={sessionName}
+                  onChange={(e) => setSessionName(e.target.value)}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  color="secondary"
+                  onClick={saveSession}
+                  disabled={isSaving || !actions.length}
+                >
+                  {isSaving ? 'Saving...' : 'Save Session'}
+                </Button>
+              </Grid>
+            </Grid>
+          </div>
+        </Container>
+      );
+    };
